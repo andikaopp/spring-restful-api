@@ -2,6 +2,8 @@ package developerkeren.restful.service;
 
 import developerkeren.restful.entity.User;
 import developerkeren.restful.model.RegisterUserRequest;
+import developerkeren.restful.model.UpdateUserRequest;
+import developerkeren.restful.model.UserResponse;
 import developerkeren.restful.repository.UserRepository;
 import developerkeren.restful.security.BCrypt;
 import jakarta.transaction.Transactional;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -33,5 +37,31 @@ public class UserService {
         user.setName(request.getName());
 
         userRepository.save(user);
+    }
+
+    public UserResponse get(User user){
+        return UserResponse.builder()
+                .username(user.getUsername())
+                .name(user.getName())
+                .build();
+    }
+
+    public UserResponse update(User user, UpdateUserRequest request){
+        validationService.validate(request);
+
+        if (Objects.nonNull(request.getName())){
+            user.setName(request.getName());
+        }
+
+        if (Objects.nonNull(request.getPassword())){
+            user.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
+        }
+
+        userRepository.save(user);
+
+        return UserResponse.builder()
+                .name(user.getName())
+                .username(user.getUsername())
+                .build();
     }
 }

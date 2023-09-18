@@ -50,7 +50,7 @@ Response Body (Success) :
 {
   "data" : {
     "token" : "TOKEN",
-    "expiredAt" : 2323232322323 // miliseconds
+    "expiredAt" : 2323232322323
   }
 }
 ```
