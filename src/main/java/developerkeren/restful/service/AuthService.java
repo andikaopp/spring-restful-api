@@ -46,4 +46,12 @@ public class AuthService {
     private Long next60Days(){
         return System.currentTimeMillis() + (1000 * 60 * 24 * 60);
     }
+
+    @Transactional
+    public void logout(User user){
+        user.setToken(null);
+        user.setTokenExpiredAt(null);
+
+        userRepository.save(user);
+    }
 }
