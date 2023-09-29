@@ -7,6 +7,7 @@ import developerkeren.restful.model.RegisterUserRequest;
 import developerkeren.restful.model.UpdateUserRequest;
 import developerkeren.restful.model.UserResponse;
 import developerkeren.restful.model.WebResponse;
+import developerkeren.restful.repository.ContactRepository;
 import developerkeren.restful.repository.UserRepository;
 import developerkeren.restful.security.BCrypt;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,10 +35,14 @@ class UserControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private ContactRepository contactRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
+        contactRepository.deleteAll();
         userRepository.deleteAll();
     }
 
