@@ -3,10 +3,7 @@ package developerkeren.restful.service;
 import developerkeren.restful.entity.Address;
 import developerkeren.restful.entity.Contact;
 import developerkeren.restful.entity.User;
-import developerkeren.restful.model.AddressResponse;
-import developerkeren.restful.model.ContactResponse;
-import developerkeren.restful.model.CreateAddressRequest;
-import developerkeren.restful.model.UpdateAddressRequest;
+import developerkeren.restful.model.*;
 import developerkeren.restful.repository.AddressRepository;
 import developerkeren.restful.repository.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -89,5 +87,26 @@ public class AddressService {
         addressRepository.save(address);
 
         return toAddressResponse(address);
+    }
+
+    @Transactional
+    public void remove(User user, String contactId, String addressId){
+        Contact contact = contactRepository.findFirstByUserAndId(user, contactId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact is not found"));
+
+        Address address = addressRepository.findFirstByContactAndId(contact, addressId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address is not found"));
+
+        addressRepository.delete(address);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AddressResponse> list(User user, String contactId){
+        Contact contact = contactRepository.findFirstByUserAndId(user, contactId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact is not found"));
+
+        List<Address> addresses = addressRepository.findAllByContact(contact);
+
+        return addresses.stream().map(this::toAddressResponse).toList();
     }
 }
